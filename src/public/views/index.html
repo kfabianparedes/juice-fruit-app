@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Iniciar sesión en Juice Fruit">
+  <title>Iniciar Sesión - Juice Fruit</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Iniciar Sesión 🍹</h1>
+      <p class="subtitle">Ingresa tus credenciales para continuar</p>
+    </header>
+
+    <form id="loginForm" class="form" novalidate>
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="email"
+          name="email" 
+          placeholder="usuario@ejemplo.com" 
+          required 
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password"
+          name="password" 
+          placeholder="Mínimo 6 caracteres" 
+          required 
+          autocomplete="current-password"
+          minlength="6"
+        />
+      </div>
+
+      <button type="submit" class="btn-submit">Iniciar Sesión</button>
+    </form>
+
+    <div id="response" role="alert" aria-live="polite"></div>
+
+    <div class="demo-credentials">
+      <p><strong>Credenciales de prueba:</strong></p>
+      <ul>
+        <li>admin@example.com / admin123</li>
+        <li>user@example.com / user123</li>
+      </ul>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script type="module" src="/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,26 +1,71 @@
-import type { Request, Response } from 'express';
-import type { FormData, ApiResponse } from '../types/index.js';
-import { validateFormData } from '../utils/validators.js';
+import type { Request, Response, NextFunction } from 'express';
+import type { UserData, ApiResponse } from '../types/index.js';
+import { validateLoginData } from '../utils/validators.js';
+import { AuthService } from '../services/form.service.js';
+import { UserRepository } from '../repositories/form.repository.js';
 
-export class FormController {
-  static async submitForm(req: Request, res: Response): Promise<void> {
-    const validatedData = validateFormData(req.body);
+/**
+ * Controlador para manejar autenticación
+ * @class AuthController
+ */
+export class AuthController {
+  private readonly authService: AuthService;
 
-    console.log('Formulario recibido:', validatedData);
-
-    const response: ApiResponse<FormData> = {
-      status: 'success',
-      message: '¡Completado exitosamente! 🎉',
-      data: validatedData,
-    };
-
-    res.json(response);
+  constructor() {
+    const repository = new UserRepository();
+    this.authService = new AuthService(repository);
   }
 
-  static getWelcomeMessage(_req: Request, res: Response): void {
-    res.json({ 
-      message: 'Hello, Juice Fruit! 🍹',
-      timestamp: new Date().toISOString()
-    });
+  /**
+   * Procesa el inicio de sesión
+   * @async
+   */
+  async login(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      // Validar datos del request
+      const validatedData = validateLoginData(req.body);
+
+      // Autenticar usuario
+      const user = await this.authService.login(validatedData);
+
+      // Construir respuesta exitosa
+      const response: ApiResponse<UserData> = {
+        status: 'success',
+        message: '¡Inicio de sesión exitoso! 🎉',
+        data: user,
+        metadata: {
+          requestId: req.id,
+          timestamp: new Date().toISOString(),
+        },
+      };
+
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Obtiene mensaje de bienvenida
+   */
+  getWelcomeMessage(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void {
+    try {
+      const welcomeInfo = this.authService.getWelcomeInfo();
+      
+      res.status(200).json({
+        ...welcomeInfo,
+        requestId: req.id,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 }

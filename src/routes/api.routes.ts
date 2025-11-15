@@ -1,8 +1,11 @@
 import { Router } from 'express';
-import { FormController } from '../controllers/form.controller.js';
+import { AuthController } from '../controllers/form.controller.js';
 
 const router = Router();
+const authController = new AuthController();
 
-router.get('/message', FormController.getWelcomeMessage);
+router.get('/message', (req, res, next) => 
+  authController.getWelcomeMessage(req, res, next)
+);
 
 export default router;

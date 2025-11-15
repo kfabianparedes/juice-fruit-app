@@ -1,30 +1,24 @@
-import type { FormData } from '../types/index.js';
+import type { LoginData } from '../types/index.js';
+import { ValidationError } from '../errors/app.error.js';
 
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-export const validateFormData = (data: unknown): FormData => {
+export const validateLoginData = (data: unknown): LoginData => {
   if (!data || typeof data !== 'object') {
-    throw new ValidationError('Los datos del formulario son inválidos');
+    throw new ValidationError('Los datos de inicio de sesión son inválidos');
   }
 
-  const { name, email } = data as Partial<FormData>;
-
-  if (!name || typeof name !== 'string' || name.trim().length === 0) {
-    throw new ValidationError('El nombre es requerido y debe ser válido');
-  }
+  const { email, password } = data as Partial<LoginData>;
 
   if (!email || typeof email !== 'string' || !isValidEmail(email)) {
     throw new ValidationError('El correo electrónico es inválido');
   }
 
+  if (!password || typeof password !== 'string' || password.length < 6) {
+    throw new ValidationError('La contraseña debe tener al menos 6 caracteres');
+  }
+
   return {
-    name: name.trim(),
     email: email.trim().toLowerCase(),
+    password: password,
   };
 };
 

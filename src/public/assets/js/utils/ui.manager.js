@@ -1,29 +1,34 @@
+import { APP_CONFIG, MESSAGES } from '../config.js';
+
 /**
  * Clase para manejar la UI de notificaciones
  */
-class UIManager {
+export class UIManager {
   constructor(responseElement) {
     this.responseElement = responseElement;
   }
 
   /**
-   * Muestra un mensaje de éxito con los datos
+   * Muestra un mensaje de éxito y redirige
    * @param {string} message - Mensaje a mostrar
-   * @param {Object} data - Datos del formulario
+   * @param {Object} userData - Datos del usuario
    */
-  showSuccess(message, data) {
+  showSuccess(message, userData) {
     if (!this.responseElement) return;
 
     this.responseElement.innerHTML = `
       <div class="success-message">
         <p class="message">${this.escapeHtml(message)}</p>
-        <ul class="data-list">
-          <li><strong>Nombre:</strong> ${this.escapeHtml(data.name)}</li>
-          <li><strong>Correo:</strong> ${this.escapeHtml(data.email)}</li>
-        </ul>
+        <p class="redirect-message">Redirigiendo...</p>
       </div>
     `;
     this.responseElement.className = 'response-box success';
+
+    // Guardar datos del usuario y redirigir
+    setTimeout(() => {
+      sessionStorage.setItem('userData', JSON.stringify(userData));
+      window.location.href = APP_CONFIG.WELCOME_PAGE;
+    }, 1500);
   }
 
   /**

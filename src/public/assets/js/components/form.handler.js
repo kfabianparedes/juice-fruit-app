@@ -1,7 +1,11 @@
+import { MESSAGES } from '../config.js';
+import { ApiService } from '../services/api.service.js';
+import { UIManager } from '../utils/ui.manager.js';
+
 /**
- * Clase para manejar el formulario
+ * Clase para manejar el formulario de login
  */
-class FormHandler {
+export class FormHandler {
   constructor(formElement, responseElement) {
     this.form = formElement;
     this.uiManager = new UIManager(responseElement);
@@ -28,26 +32,41 @@ class FormHandler {
     event.preventDefault();
 
     try {
-      // Obtener y validar datos
+      // Obtener datos
       const formData = new FormData(this.form);
       const data = this.getFormData(formData);
+
+      // Validación básica en cliente
+      this.validateData(data);
 
       // Mostrar carga
       this.uiManager.showLoading();
       this.disableForm();
 
-      // Enviar datos
-      const response = await ApiService.submitForm(data);
+      // Enviar credenciales
+      const response = await ApiService.login(data);
 
-      // Mostrar éxito
+      // Mostrar éxito y redirigir
       this.uiManager.showSuccess(response.message, response.data);
-      this.form.reset();
 
     } catch (error) {
-      console.error('Error al enviar formulario:', error);
+      console.error('Error al iniciar sesión:', error);
       this.uiManager.showError(error.message || MESSAGES.ERROR_GENERIC);
-    } finally {
       this.enableForm();
+    }
+  }
+
+  /**
+   * Validación básica en cliente
+   * @param {Object} data - Datos a validar
+   */
+  validateData(data) {
+    if (!data.email || !data.password) {
+      throw new Error('Todos los campos son obligatorios');
+    }
+
+    if (data.password.length < 6) {
+      throw new Error('La contraseña debe tener al menos 6 caracteres');
     }
   }
 

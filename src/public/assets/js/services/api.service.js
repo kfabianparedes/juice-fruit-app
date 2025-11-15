@@ -1,15 +1,17 @@
+import { APP_CONFIG, MESSAGES } from '../config.js';
+
 /**
  * Servicio para manejar las peticiones HTTP
  */
-class ApiService {
+export class ApiService {
   /**
-   * Envía datos del formulario al servidor
-   * @param {Object} data - Datos a enviar
+   * Envía credenciales de login al servidor
+   * @param {Object} data - Credenciales a enviar
    * @returns {Promise<Object>} Respuesta del servidor
    */
-  static async submitForm(data) {
+  static async login(data) {
     try {
-      const response = await fetch(APP_CONFIG.FORM_ENDPOINT, {
+      const response = await fetch(APP_CONFIG.LOGIN_ENDPOINT, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json' 
@@ -17,12 +19,13 @@ class ApiService {
         body: JSON.stringify(data),
       });
 
+      const responseData = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || MESSAGES.ERROR_GENERIC);
+        throw new Error(responseData.message || MESSAGES.ERROR_GENERIC);
       }
 
-      return await response.json();
+      return responseData;
     } catch (error) {
       if (error instanceof TypeError) {
         throw new Error(MESSAGES.ERROR_NETWORK);

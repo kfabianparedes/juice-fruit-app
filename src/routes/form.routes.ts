@@ -1,8 +1,11 @@
 import { Router } from 'express';
-import { FormController } from '../controllers/form.controller.js';
+import { AuthController } from '../controllers/form.controller.js';
 
 const router = Router();
+const authController = new AuthController();
 
-router.post('/submit', FormController.submitForm);
+router.post('/login', (req, res, next) => 
+  authController.login(req, res, next)
+);
 
 export default router;
